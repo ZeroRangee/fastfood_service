@@ -3,7 +3,7 @@ from .category import Category
 from .component_product import ComponentProduct
 from .nutritional_value import NutritionalValue
 from .product import Product
-
+from .product_image import ProductImage
 
 
 __all__ = (
@@ -12,4 +12,5 @@ __all__ = (
     "ComponentProduct",
     "NutritionalValue",
     "Product",
+    "ProductImage",
 )
