@@ -3,10 +3,9 @@ version: '3.9'
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile.django
-    container_name: django_app
-    command: uvicorn your_project.asgi:application --host 0.0.0.0 --port 8000
+      context: backend/app/
+      dockerfile: Dockerfile.app
+    container_name: app
     volumes:
       - .:/app
       - static_volume:/app/static
@@ -15,9 +14,10 @@ services:
       - "8000"
     depends_on:
       - redis
+    hostname: app
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine3.22-slim
     container_name: nginx
     ports:
       - "80:80"
@@ -25,14 +25,27 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/app/static
       - media_volume:/app/media
-    depends_on:
-      - app
+    # depends_on:
+    #   - app
 
   redis:
-    image: redis:latest
+    image: redis:8-alpine
     container_name: redis
     ports:
       - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine3.11
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "5432:5432"
+
 
 volumes:
   static_volume:
